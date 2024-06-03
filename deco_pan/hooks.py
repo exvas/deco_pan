@@ -226,4 +226,16 @@ app_license = "mit"
 # default_log_clearing_doctypes = {
 # 	"Logging DocType Name": 30  # days to retain logs
 # }
+report_override_html = {
+	"Accounts Receivable": "overrides/reports/html/accounts_receivable.html",
+}
+report_override = {
+	"Accounts Receivable": "deco_pan.overrides.reports.account_receivable.execute"
+}
+report_override_js = {
+	"Accounts Receivable": "overrides/reports/js/accounts_receivable.js",
+}
 
+override_whitelisted_methods = {
+	"frappe.desk.query_report.get_script": "deco_pan.overrides.report.get_script",
+}
