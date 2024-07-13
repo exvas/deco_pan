@@ -38,15 +38,23 @@ from erpnext.accounts.general_ledger import (
 from erpnext.stock.get_item_details import get_bin_details, get_conversion_factor
 from erpnext.stock.stock_ledger import make_sl_entries
 class CashInvoice(Document):
-
-	def set_indicator(self):
-		if frm.doc.docstatus == 1:
-			self.indicator_color = "green"
-			self.indicator_title = _("Paid")
 	@frappe.whitelist()
 	def get_stock_details(self, item_code=None, validate_stock=False):
 		if item_code:
-			bin_details = self.get_item_bin(i.item_code, self.warehouse)
+			bin_details = self.get_item_bin(item_code, self.warehouse)
+			last_salling_rate = frappe.db.sql("""
+				SELECT CII.rate
+				FROM `tabCash Invoice Item` CII
+				INNER JOIN `tabCash Invoice` CI
+				ON CI.name = CII.parent
+				WHERE 
+					CI.customer = '{0}' and
+					CII.docstatus = 1 and
+					CII.item_code = '{1}'
+				ORDER BY CI.creation ASC
+				LIMIT 1
+			""".format(self.customer, item_code))
+			bin_details["last_selling_rate"] = last_salling_rate[0][0] if last_salling_rate else 0
 			return bin_details
 		else:
 			for i in self.items:
@@ -69,6 +77,9 @@ class CashInvoice(Document):
 			return {}
 
 	def validate(self):
+		self.balance_amount = self.advance_paid_amount - self.paid_amount
+		if self.advance_paid_amount < self.paid_amount:
+			frappe.throw("Paid amount cannot be less than Invoice Amount")
 		self.validate_debit_to_acc()
 		self.validate_item_cost_centers()
 		self.validate_income_account()
