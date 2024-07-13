@@ -70,7 +70,7 @@ frappe.ui.form.on("Cash Invoice", {
 				},
 			};
 		});
-        frm.fields_dict["items"].grid.get_field("item").get_query = function () {
+        frm.fields_dict["items"].grid.get_field("item_code").get_query = function () {
 			return {
 				filters: {
 					disabled: 0
@@ -136,19 +136,27 @@ frappe.ui.form.on("Cash Invoice", {
 		frm.trigger("set_rounded_total");
 	},
 	validate(frm){
+		if(frm.doc.items.length == 0){
+			frappe.throw("Add atleast one item!")
+		}
 		let gt = frm.doc.rounded_total || frm.doc.grand_total
 		frm.set_value("paid_amount", gt)
 		let total_qty = 0
 		frm.doc.items.forEach(row=>{
+			if(row.available_qty <= 0){
+				frappe.throw(`${row.item_code} require ${row.qty} qty in ${frm.doc.warehouse}`)
+			}
 			total_qty += row.qty;
 			frappe.db.get_doc("Deco Pan Settings").then(data=>{
-				row.cost_center = data.default_cost_center;
+				row.cost_center = frm.doc.cost_center || data.default_cost_center;
 				row.income_account = data.default_income_account;
-				row.warehouse = data.default_warehouse;
+				row.warehouse = frm.doc.warehouse || data.default_warehouse;
 				frm.refresh_field("items");
 			});
 		})
-		frm.set_value("total_quantity", total_qty)
+		frm.trigger("calculate_totals");
+		frm.set_value("total_quantity", total_qty);
+		frm.set_value("paid_amount", frm.doc.rounded_total || frm.doc.grand_total);
 	},
 	set_pos_data(frm) {
 		let company = frm.doc.company || frappe.defaults.get_user_default("Company")
@@ -160,17 +168,32 @@ frappe.ui.form.on("Cash Invoice", {
 				method: "set_missing_values",
 				callback: function (r) {
 					if (!r.exc) {
-						// me.frm.trigger("update_stock");
-						// frappe.model.set_default_values(frm.doc);
-						// if (me.frm.doc.taxes_and_charges) {
-						// 	me.frm.script_manager.trigger("taxes_and_charges");
-						// }
-						// me.set_dynamic_labels();
-						// me.calculate_taxes_and_totals();
 					}
 				},
 			});
 		}
+	},
+	warehouse(frm){
+		frm.doc.items.forEach(row=>{
+			if(frm.doc.warehouse){
+				frappe.call({
+					method: "get_stock_details",
+					async: false,
+					freeze: true,
+					freeze_message: "Calculating available stock...",
+					doc: frm.doc,
+					args:{},
+					callback:function(r){
+						if(r.message){
+							console.log(r.message)
+							row.warehouse = frm.doc.warehouse;
+							row.available_qty = r.message.actual_qty;
+						}
+						frm.refresh_field("items");
+					}
+				});
+			}
+		})
 	}
 });
 
@@ -186,53 +209,73 @@ frappe.ui.form.on("Cash Invoice Item", {
 	},
 	item_code(frm, cdt, cdn){
 		var row = locals[cdt][cdn];
-		frappe.call({
-			method: "erpnext.stock.get_item_details.get_item_details",
-			async: false,
-			args:{
-				doc: frm.doc,
-				args: {
-					item_code: row.item_code,
-					barcode: null,
-					customer: frm.doc.customer,
-					currency: "INR",
-					update_stock: 0,
-					conversion_rate: 1,
-					price_list: "Standard Selling",
-					price_list_currency: "INR",
-					plc_conversion_rate: 1,
-					company: frm.doc.company || frappe.defaults.get_user_default("Company"),
-					is_pos: 1,
-					is_return: 0,
-					// ignore_pricing_rule: 0,
-					doctype: frm.doc.doctype,
-					name: frm.doc.name,
-					qty: row.qty,
-					net_rate: 0,
-					base_net_rate: 0,
-					stock_qty: 1,
-					weight_uom: "",
-					stock_uom: row.uom,
-					pos_profile: "",
-					cost_center: row.cost_center || frm.doc.cost_center,
-					tax_category: "",
-					child_doctype: row.name,
-					child_docname: row.name,
-					update_stock: 1,
-					warehouse: frm.doc.warehouse || row.warehouse
+		if(row.item_code){
+			frappe.call({
+				method: "erpnext.stock.get_item_details.get_item_details",
+				async: false,
+				args:{
+					doc: frm.doc,
+					args: {
+						item_code: row.item_code,
+						barcode: null,
+						customer: frm.doc.customer,
+						currency: "INR",
+						update_stock: 0,
+						conversion_rate: 1,
+						price_list: "Standard Selling",
+						price_list_currency: "INR",
+						plc_conversion_rate: 1,
+						company: frm.doc.company || frappe.defaults.get_user_default("Company"),
+						is_pos: 1,
+						is_return: 0,
+						// ignore_pricing_rule: 0,
+						doctype: frm.doc.doctype,
+						name: frm.doc.name,
+						qty: row.qty,
+						net_rate: 0,
+						base_net_rate: 0,
+						stock_qty: 1,
+						weight_uom: "",
+						stock_uom: row.uom,
+						pos_profile: "",
+						cost_center: row.cost_center || frm.doc.cost_center,
+						tax_category: "",
+						child_doctype: row.name,
+						child_docname: row.name,
+						update_stock: 1,
+						warehouse: frm.doc.warehouse || row.warehouse
+					}
+				},
+				callback:function(r){
+					if(r.message){
+						row.rate = r.message.price_list_rate;
+						row.amount = r.message.price_list_rate * row.qty;
+						row.warehouse = frm.doc.warehouse;
+					}
+					// frm.refresh_field("items");
 				}
-			},
-			callback:function(r){
-				if(r.message){
-					row.rate = r.message.price_list_rate;
-					row.amount = r.message.price_list_rate * row.qty;
-					row.available_qty = r.message.actual_qty;
-					row.warehouse = frm.doc.warehouse;
-				}
-				frm.refresh_field("items");
-				frm.trigger("calculate_totals");
+			});
+			if(frm.doc.warehouse){
+				frappe.call({
+					method: "get_stock_details",
+					async: true,
+					freeze: true,
+					freeze_message: "Calculating available stock...",
+					doc: frm.doc,
+					args:{},
+					callback:function(r){
+						if(r.message){
+							console.log(r.message)
+							row.warehouse = frm.doc.warehouse;
+							row.available_qty = r.message.actual_qty;
+						}
+						frm.refresh_field("items");
+					}
+				});
 			}
-		});
+		}
+		frm.trigger("calculate_totals");
+
 	},
 	qty:function(frm, cdt, cdn){
 		var row = locals[cdt][cdn];
@@ -241,6 +284,12 @@ frappe.ui.form.on("Cash Invoice Item", {
 		}else if(row.qty > row.available_qty){
 			frappe.throw(_(`Qty cannot be greater than ${row.available_qty} for ${row.item_code}`));
 		}
+		row.amount = row.qty * row.rate;
+		frm.refresh_field("items");
+		frm.trigger("calculate_totals");
+	},
+	rate:function(frm, cdt, cdn){
+		var row = locals[cdt][cdn];
 		row.amount = row.qty * row.rate;
 		frm.refresh_field("items");
 		frm.trigger("calculate_totals");

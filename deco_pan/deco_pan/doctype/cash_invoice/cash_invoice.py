@@ -38,6 +38,36 @@ from erpnext.accounts.general_ledger import (
 from erpnext.stock.get_item_details import get_bin_details, get_conversion_factor
 from erpnext.stock.stock_ledger import make_sl_entries
 class CashInvoice(Document):
+
+	def set_indicator(self):
+		if frm.doc.docstatus == 1:
+			self.indicator_color = "green"
+			self.indicator_title = _("Paid")
+	@frappe.whitelist()
+	def get_stock_details(self, item_code=None, validate_stock=False):
+		if item_code:
+			bin_details = self.get_item_bin(i.item_code, self.warehouse)
+			return bin_details
+		else:
+			for i in self.items:
+				actual_qty = 0
+				print(self.warehouse)
+				print(i.item_code)
+				bin_details = self.get_item_bin(i.item_code, self.warehouse)
+				if bin_details.get("actual_qty"):
+					if validate_stock:
+						frappe.msgprint("{0} is not available in {1}".format(i.item_code, self.warehouse))
+					elif not validate_stock:
+						actual_qty = bin_details.get("actual_qty")
+				i.available_qty = actual_qty
+
+	def get_item_bin(self, item_code, warehouse):
+		bin_name = frappe.db.exists("Bin", {"item_code": item_code, "warehouse": warehouse})
+		if bin_name:
+			return frappe.get_doc("Bin", bin_name).as_dict()
+		else:
+			return {}
+
 	def validate(self):
 		self.validate_debit_to_acc()
 		self.validate_item_cost_centers()
@@ -114,6 +144,8 @@ class CashInvoice(Document):
 			company.default_inventory_account ,
 			tvr
 		)
+
+		self.status = "Paid"
 
 	def create_stock_ledger_entry(self):
 		for item in self.items:
@@ -441,7 +473,7 @@ class CashInvoice(Document):
 		self.cancel_stock_ledger_entry()
 		self.set_sle_cancel()
 		# self.update_stock_ledger()
-		make_reverse_gl_entries(voucher_type=self.doctype, voucher_no=self.name, partial_cancel=True)
+		make_reverse_gl_entries(voucher_type=self.doctype, voucher_no=self.name)
 
 	def cancel_stock_ledger_entry(self, ):
 		for item in self.items:
