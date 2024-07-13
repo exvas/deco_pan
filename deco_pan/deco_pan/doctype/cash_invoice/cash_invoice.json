@@ -10,6 +10,7 @@
   "naming_series",
   "customer",
   "customer_name",
+  "company",
   "column_break_yeeb",
   "date",
   "posting_time",
@@ -53,7 +54,8 @@
    "fieldname": "customer",
    "fieldtype": "Link",
    "label": "Customer",
-   "options": "Customer"
+   "options": "Customer",
+   "reqd": 1
   },
   {
    "fetch_from": "customer.customer_name",
@@ -70,13 +72,15 @@
    "default": "Today",
    "fieldname": "date",
    "fieldtype": "Date",
-   "label": "Date"
+   "label": "Date",
+   "reqd": 1
   },
   {
    "default": "Now",
    "fieldname": "posting_time",
    "fieldtype": "Time",
-   "label": "Posting Time"
+   "label": "Posting Time",
+   "reqd": 1
   },
   {
    "fieldname": "column_break_iaaa",
@@ -86,12 +90,15 @@
    "fieldname": "payment_mode",
    "fieldtype": "Link",
    "label": "Payment Mode",
-   "options": "Account"
+   "options": "Account",
+   "read_only": 1,
+   "reqd": 1
   },
   {
    "fieldname": "paid_amount",
    "fieldtype": "Currency",
-   "label": "Paid Amount"
+   "label": "Paid Amount",
+   "read_only": 1
   },
   {
    "fieldname": "accounting_dimensions_section",
@@ -101,8 +108,10 @@
   {
    "fieldname": "cost_center",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Cost Center",
-   "options": "Cost Center"
+   "options": "Cost Center",
+   "reqd": 1
   },
   {
    "fieldname": "column_break_hpbr",
@@ -117,8 +126,10 @@
   {
    "fieldname": "warehouse",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Warehouse ",
-   "options": "Warehouse"
+   "options": "Warehouse",
+   "reqd": 1
   },
   {
    "fieldname": "section_break_geeb",
@@ -127,7 +138,8 @@
   {
    "fieldname": "total_quantity",
    "fieldtype": "Float",
-   "label": "Total Quantity"
+   "label": "Total Quantity",
+   "read_only": 1
   },
   {
    "fieldname": "column_break_bims",
@@ -147,7 +159,8 @@
    "fieldname": "items",
    "fieldtype": "Table",
    "label": "Items",
-   "options": "Cash Invoice Items"
+   "options": "Cash Invoice Item",
+   "reqd": 1
   },
   {
    "fieldname": "grand_total",
@@ -236,12 +249,18 @@
    "print_hide": 1,
    "read_only": 1,
    "search_index": 1
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-06-28 07:47:39.133032",
+ "modified": "2024-07-13 12:46:11.399642",
  "modified_by": "Administrator",
  "module": "Deco Pan",
  "name": "Cash Invoice",
