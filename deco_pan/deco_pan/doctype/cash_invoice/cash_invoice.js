@@ -111,7 +111,10 @@ frappe.ui.form.on("Cash Invoice", {
 		frm.set_value("net_total", net_total);
 		frm.set_value("rounded_total", net_total);
 		frm.set_value("grand_total", net_total);
+		let gt = frm.doc.rounded_total || frm.doc.grand_total
 		frm.trigger("set_rounded_total");
+		frm.set_value("paid_amount", gt);
+		frm.trigger("advance_paid_amount")
 	},
 	set_rounded_total(frm) {
 		var disable_rounded_total = 0;
@@ -139,8 +142,7 @@ frappe.ui.form.on("Cash Invoice", {
 		if(frm.doc.items.length == 0){
 			frappe.throw("Add atleast one item!")
 		}
-		let gt = frm.doc.rounded_total || frm.doc.grand_total
-		frm.set_value("paid_amount", gt)
+		var gt = frm.doc.rounded_total || frm.doc.grand_total
 		let total_qty = 0
 		frm.doc.items.forEach(row=>{
 			if(row.available_qty <= 0){
@@ -156,7 +158,22 @@ frappe.ui.form.on("Cash Invoice", {
 		})
 		frm.trigger("calculate_totals");
 		frm.set_value("total_quantity", total_qty);
-		frm.set_value("paid_amount", frm.doc.rounded_total || frm.doc.grand_total);
+		frm.set_value("paid_amount", gt);
+	},
+	before_save(frm){
+		var gt = frm.doc.rounded_total || frm.doc.grand_total;
+		frm.set_value("paid_amount", gt);
+		// frm.trigger("advance_paid_amount")
+	},
+	advance_paid_amount(frm){
+		if(frm.doc.advance_paid_amount < frm.doc.paid_amount){
+			frappe.throw("Paid amount cannot be less than Invoice Amount")
+		}
+		
+		var gt = frm.doc.rounded_total || frm.doc.grand_total;
+		if(frm.doc.advance_paid_amount > 0){
+			frm.set_value("balance_amount", frm.doc.advance_paid_amount - gt)
+		}
 	},
 	set_pos_data(frm) {
 		let company = frm.doc.company || frappe.defaults.get_user_default("Company")
@@ -262,12 +279,15 @@ frappe.ui.form.on("Cash Invoice Item", {
 					freeze: true,
 					freeze_message: "Calculating available stock...",
 					doc: frm.doc,
-					args:{},
+					args:{
+						"item_code": row.item_code
+					},
 					callback:function(r){
 						if(r.message){
 							console.log(r.message)
 							row.warehouse = frm.doc.warehouse;
 							row.available_qty = r.message.actual_qty;
+							row.last_selling_rate = r.message.last_selling_rate;
 						}
 						frm.refresh_field("items");
 					}
@@ -275,7 +295,6 @@ frappe.ui.form.on("Cash Invoice Item", {
 			}
 		}
 		frm.trigger("calculate_totals");
-
 	},
 	qty:function(frm, cdt, cdn){
 		var row = locals[cdt][cdn];

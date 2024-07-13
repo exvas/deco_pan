@@ -17,6 +17,8 @@
   "column_break_iaaa",
   "payment_mode",
   "paid_amount",
+  "advance_paid_amount",
+  "balance_amount",
   "accounting_dimensions_section",
   "cost_center",
   "column_break_hpbr",
@@ -98,7 +100,7 @@
   {
    "fieldname": "paid_amount",
    "fieldtype": "Currency",
-   "label": "Paid Amount",
+   "label": "Invoice Amount",
    "read_only": 1
   },
   {
@@ -266,12 +268,22 @@
    "hidden": 1,
    "label": "Status",
    "options": "\nPaid\nUnpaid"
+  },
+  {
+   "fieldname": "advance_paid_amount",
+   "fieldtype": "Currency",
+   "label": "Paid Amount"
+  },
+  {
+   "fieldname": "balance_amount",
+   "fieldtype": "Currency",
+   "label": "Balance Amount"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-07-13 18:12:50.359333",
+ "modified": "2024-07-13 20:45:13.284843",
  "modified_by": "Administrator",
  "module": "Deco Pan",
  "name": "Cash Invoice",
