@@ -40,6 +40,7 @@
   "customers_purchase_order_date",
   "additional_info_section",
   "remarks",
+  "status",
   "column_break_dedd",
   "terms_and_conditions",
   "amended_from"
@@ -148,7 +149,8 @@
   {
    "fieldname": "total",
    "fieldtype": "Currency",
-   "label": "Total "
+   "label": "Total ",
+   "read_only": 1
   },
   {
    "fieldname": "items_details_section",
@@ -159,18 +161,19 @@
    "fieldname": "items",
    "fieldtype": "Table",
    "label": "Items",
-   "options": "Cash Invoice Item",
-   "reqd": 1
+   "options": "Cash Invoice Item"
   },
   {
    "fieldname": "grand_total",
    "fieldtype": "Currency",
-   "label": "Grand Total"
+   "label": "Grand Total",
+   "read_only": 1
   },
   {
    "fieldname": "rounded_total",
    "fieldtype": "Currency",
-   "label": "Rounded Total"
+   "label": "Rounded Total",
+   "read_only": 1
   },
   {
    "default": "0",
@@ -192,7 +195,8 @@
   {
    "fieldname": "net_total",
    "fieldtype": "Currency",
-   "label": "Net Total"
+   "label": "Net Total",
+   "read_only": 1
   },
   {
    "allow_on_submit": 1,
@@ -255,12 +259,19 @@
    "fieldtype": "Link",
    "label": "Company",
    "options": "Company"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "hidden": 1,
+   "label": "Status",
+   "options": "\nPaid\nUnpaid"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-07-13 12:46:11.399642",
+ "modified": "2024-07-13 18:12:50.359333",
  "modified_by": "Administrator",
  "module": "Deco Pan",
  "name": "Cash Invoice",
@@ -283,5 +294,10 @@
  ],
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [
+  {
+   "color": "Green",
+   "title": "Paid"
+  }
+ ]
 }
