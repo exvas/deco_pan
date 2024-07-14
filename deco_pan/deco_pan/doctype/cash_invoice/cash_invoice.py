@@ -40,34 +40,55 @@ from erpnext.stock.stock_ledger import make_sl_entries
 class CashInvoice(Document):
 	@frappe.whitelist()
 	def get_stock_details(self, item_code=None, validate_stock=False):
+		cinv = frappe.qb.DocType("Cash Invoice")
+		cinvi = frappe.qb.DocType("Cash Invoice Item")
 		if item_code:
 			bin_details = self.get_item_bin(item_code, self.warehouse)
-			last_salling_rate = frappe.db.sql("""
-				SELECT CII.rate
-				FROM `tabCash Invoice Item` CII
-				INNER JOIN `tabCash Invoice` CI
-				ON CI.name = CII.parent
-				WHERE 
-					CI.customer = '{0}' and
-					CII.docstatus = 1 and
-					CII.item_code = '{1}'
-				ORDER BY CI.creation ASC
-				LIMIT 1
-			""".format(self.customer, item_code))
-			bin_details["last_selling_rate"] = last_salling_rate[0][0] if last_salling_rate else 0
+			last_selling_rate = (
+				frappe.qb.from_(cinv)
+				.inner_join(cinvi)
+				.on(cinv.name == cinvi.parent)
+				.select(cinvi.rate)
+				.where(
+					(cinv.docstatus == 1) &
+					(cinvi.item_code == item_code) &
+					(cinv.customer == self.customer)
+				)
+				.orderby(cinv.creation, order = Order.desc)
+				.limit(1)
+				.run()
+			)
+			bin_details["last_selling_rate"] = last_selling_rate[0][0] if last_selling_rate else 0
+			print(last_selling_rate)
 			return bin_details
 		else:
 			for i in self.items:
 				actual_qty = 0
-				print(self.warehouse)
-				print(i.item_code)
 				bin_details = self.get_item_bin(i.item_code, self.warehouse)
 				if bin_details.get("actual_qty"):
 					if validate_stock:
 						frappe.msgprint("{0} is not available in {1}".format(i.item_code, self.warehouse))
 					elif not validate_stock:
 						actual_qty = bin_details.get("actual_qty")
+				print(actual_qty)
 				i.available_qty = actual_qty
+				i.warehouse = self.warehouse
+
+				last_selling_rate = (
+					frappe.qb.from_(cinv)
+					.inner_join(cinvi)
+					.on(cinv.name == cinvi.parent)
+					.select(cinvi.rate)
+					.where(
+						(cinv.docstatus == 1) &
+						(cinvi.item_code == item_code) &
+						(cinv.customer == self.customer)
+					)
+					.orderby(cinv.creation, order = Order.desc)
+					.limit(1)
+					.run()
+				)
+				i.last_selling_rate = last_selling_rate[0][0] if last_selling_rate else 0
 
 	def get_item_bin(self, item_code, warehouse):
 		bin_name = frappe.db.exists("Bin", {"item_code": item_code, "warehouse": warehouse})
@@ -77,9 +98,6 @@ class CashInvoice(Document):
 			return {}
 
 	def validate(self):
-		self.balance_amount = self.advance_paid_amount - self.paid_amount
-		if self.advance_paid_amount < self.paid_amount:
-			frappe.throw("Paid amount cannot be less than Invoice Amount")
 		self.validate_debit_to_acc()
 		self.validate_item_cost_centers()
 		self.validate_income_account()
@@ -138,6 +156,10 @@ class CashInvoice(Document):
 		pass
 
 	def on_submit(self):
+		self.balance_amount = self.advance_paid_amount - self.paid_amount
+		if self.advance_paid_amount < self.paid_amount:
+			frappe.throw("Paid amount cannot be less than Invoice Amount")
+
 		company = frappe.get_doc("Company", self.company)
 		tvr = self.calcluate_valuation_amount()
 

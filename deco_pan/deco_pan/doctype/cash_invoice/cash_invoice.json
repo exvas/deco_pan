@@ -277,13 +277,14 @@
   {
    "fieldname": "balance_amount",
    "fieldtype": "Currency",
-   "label": "Balance Amount"
+   "label": "Balance Amount",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-07-13 20:45:13.284843",
+ "modified": "2024-07-14 13:44:22.013666",
  "modified_by": "Administrator",
  "module": "Deco Pan",
  "name": "Cash Invoice",
