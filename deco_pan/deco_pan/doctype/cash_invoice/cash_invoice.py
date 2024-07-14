@@ -59,7 +59,6 @@ class CashInvoice(Document):
 				.run()
 			)
 			bin_details["last_selling_rate"] = last_selling_rate[0][0] if last_selling_rate else 0
-			print(last_selling_rate)
 			return bin_details
 		else:
 			for i in self.items:
@@ -70,7 +69,6 @@ class CashInvoice(Document):
 						frappe.msgprint("{0} is not available in {1}".format(i.item_code, self.warehouse))
 					elif not validate_stock:
 						actual_qty = bin_details.get("actual_qty")
-				print(actual_qty)
 				i.available_qty = actual_qty
 				i.warehouse = self.warehouse
 
@@ -211,7 +209,7 @@ class CashInvoice(Document):
 			sle_doc.valuation_rate = bin_doc.valuation_rate
 			sle_doc.stock_uom = frappe.db.get_value("Item", item.item_code, "stock_uom")
 			sle_doc.stock_value = bin_doc.valuation_rate * (bin_doc.actual_qty - item.qty)
-			sle_doc.stock_value_difference = bin_doc.stock_value - (bin_doc.valuation_rate * (bin_doc.actual_qty - item.qty))
+			sle_doc.stock_value_difference = (bin_doc.valuation_rate * (bin_doc.actual_qty - item.qty)) - bin_doc.stock_value
 			sle_doc.stock_queue = json.dumps(stock_queue)
 			sle_doc.fiscal_year = self.validate_fiscal_year()
 			sle_doc.company = self.company
