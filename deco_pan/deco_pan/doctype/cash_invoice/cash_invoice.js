@@ -163,13 +163,9 @@ frappe.ui.form.on("Cash Invoice", {
 	before_save(frm){
 		var gt = frm.doc.rounded_total || frm.doc.grand_total;
 		frm.set_value("paid_amount", gt);
-		// frm.trigger("advance_paid_amount")
+		frm.trigger("advance_paid_amount")
 	},
 	advance_paid_amount(frm){
-		if(frm.doc.advance_paid_amount < frm.doc.paid_amount){
-			frappe.throw("Paid amount cannot be less than Invoice Amount")
-		}
-		
 		var gt = frm.doc.rounded_total || frm.doc.grand_total;
 		if(frm.doc.advance_paid_amount > 0){
 			frm.set_value("balance_amount", frm.doc.advance_paid_amount - gt)
@@ -191,6 +187,12 @@ frappe.ui.form.on("Cash Invoice", {
 		}
 	},
 	warehouse(frm){
+		frm.trigger("get_stock_details")
+	},
+	customer(frm){
+		frm.trigger("get_stock_details")
+	},
+	get_stock_details(frm){
 		frm.doc.items.forEach(row=>{
 			if(frm.doc.warehouse){
 				frappe.call({
@@ -199,18 +201,21 @@ frappe.ui.form.on("Cash Invoice", {
 					freeze: true,
 					freeze_message: "Calculating available stock...",
 					doc: frm.doc,
-					args:{},
+					args:{
+						"item_code": row.item_code
+					},
 					callback:function(r){
 						if(r.message){
-							console.log(r.message)
 							row.warehouse = frm.doc.warehouse;
 							row.available_qty = r.message.actual_qty;
+							row.last_selling_rate = r.message.last_selling_rate;
 						}
 						frm.refresh_field("items");
 					}
 				});
 			}
 		})
+
 	}
 });
 
@@ -226,6 +231,12 @@ frappe.ui.form.on("Cash Invoice Item", {
 	},
 	item_code(frm, cdt, cdn){
 		var row = locals[cdt][cdn];
+		if(!frm.doc.customer){
+			frm.doc.items = []
+			frm.refresh_field("items");
+			frappe.msgprint("Please select customer first");
+		}
+		
 		if(row.item_code){
 			frappe.call({
 				method: "erpnext.stock.get_item_details.get_item_details",
