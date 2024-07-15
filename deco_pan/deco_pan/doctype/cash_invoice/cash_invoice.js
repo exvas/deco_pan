@@ -14,7 +14,7 @@ frappe.ui.form.on("Cash Invoice", {
 				frm.fields_dict.items.grid.update_docfield_property(
 					"last_purchase_rate",
 					"hidden",
-					1
+					0
 				);
 				frm.refresh_field("items")
 			}
