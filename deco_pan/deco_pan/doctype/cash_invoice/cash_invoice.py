@@ -100,6 +100,9 @@ class CashInvoice(Document):
 		self.validate_item_cost_centers()
 		self.validate_income_account()
 
+		if self.docstatus == 1:
+			self.status = "Paid"
+
 	def validate_debit_to_acc(self):
 		if not self.debit_to:
 			self.debit_to = get_party_account("Customer", self.customer, self.company)
@@ -175,8 +178,6 @@ class CashInvoice(Document):
 			company.default_inventory_account ,
 			tvr
 		)
-
-		self.status = "Paid"
 
 	def create_stock_ledger_entry(self):
 		for item in self.items:
@@ -547,3 +548,29 @@ class CashInvoice(Document):
 			where voucher_type=%s and voucher_no=%s and is_cancelled = 0""",
 			(datetime.today(), frappe.session.user, self.doctype, self.name),
 		)
+
+	def on_trash(self):
+		self.flags.ignore_links = True
+		self.delete_acc_entries()
+
+	def delete_acc_entries(self):
+		if frappe.db.get_single_value("Accounts Settings", "delete_linked_ledger_entries"):
+			ple = frappe.qb.DocType("Payment Ledger Entry")
+			frappe.qb.from_(ple).delete().where(
+				(ple.voucher_type == self.doctype) & (ple.voucher_no == self.name)
+				| (
+					(ple.against_voucher_type == self.doctype)
+					& (ple.against_voucher_no == self.name)
+					& ple.delinked
+					== 1
+				)
+			).run()
+			frappe.db.sql(
+				"delete from `tabGL Entry` where voucher_type=%s and voucher_no=%s", (self.doctype, self.name)
+			)
+			frappe.db.sql(
+				"delete from `tabStock Ledger Entry` where voucher_type=%s and voucher_no=%s",
+				(self.doctype, self.name),
+			)
+
+		
