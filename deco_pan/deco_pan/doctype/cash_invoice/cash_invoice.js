@@ -10,7 +10,6 @@ frappe.ui.form.on("Cash Invoice", {
 	},
 	onload_post_render(frm){
 		frappe.db.get_single_value("Deco Pan Settings", "role_for_lp_rate").then(role=>{
-			console.log(role)
 			if(role && frappe.user.has_role(role)){
 				frm.fields_dict.items.grid.update_docfield_property(
 					"last_purchase_rate",
