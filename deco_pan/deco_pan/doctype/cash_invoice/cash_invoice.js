@@ -14,13 +14,21 @@ frappe.ui.form.on("Cash Invoice", {
 				frm.fields_dict.items.grid.update_docfield_property(
 					"last_purchase_rate",
 					"hidden",
-					1
+					0
 				);
-				frm.refresh_field("items")
 			}
 		});
 	},
 	refresh(frm){
+		frappe.db.get_single_value("Deco Pan Settings", "role_for_lp_rate").then(role=>{
+			if(role && frappe.user.has_role(role)){
+				frm.fields_dict.items.grid.update_docfield_property(
+					"last_purchase_rate",
+					"hidden",
+					0
+				);
+			}
+		});
 		if(frm.doc.docstatus != 0){
 			frm.add_custom_button(
 				__("Accounting Ledger"),
