@@ -96,13 +96,17 @@ class CashInvoice(Document):
 			return {}
 
 	def validate(self):
+		if self.advance_paid_amount:
+			self.balance_amount = self.advance_paid_amount - self.paid_amount
 		self.validate_debit_to_acc()
 		self.validate_item_cost_centers()
 		self.validate_income_account()
 
 		if self.docstatus == 1:
 			self.status = "Paid"
-
+			company = frappe.get_doc("Company", self.company)
+			self.amount_in_words = frappe.utils.money_in_words(self.grand_total, company.default_currency)
+	
 	def validate_debit_to_acc(self):
 		if not self.debit_to:
 			self.debit_to = get_party_account("Customer", self.customer, self.company)

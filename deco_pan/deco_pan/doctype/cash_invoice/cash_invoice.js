@@ -106,7 +106,6 @@ frappe.ui.form.on("Cash Invoice", {
     },
 	additional_discount_amount(frm){
 		let discountAmount = frm.doc.total - frm.doc.additional_discount_amount;
-		console.log(discountAmount)
 		frm.set_value("net_total", discountAmount);
 		frm.set_value("grand_total", discountAmount);
 		frm.trigger("set_rounded_total");
@@ -125,7 +124,6 @@ frappe.ui.form.on("Cash Invoice", {
 		let gt = frm.doc.rounded_total || frm.doc.grand_total
 		frm.trigger("set_rounded_total");
 		frm.set_value("paid_amount", gt);
-		frm.trigger("advance_paid_amount")
 	},
 	set_rounded_total(frm) {
 		var disable_rounded_total = 0;
@@ -175,12 +173,6 @@ frappe.ui.form.on("Cash Invoice", {
 		var gt = frm.doc.rounded_total || frm.doc.grand_total;
 		frm.set_value("paid_amount", gt);
 		frm.trigger("advance_paid_amount")
-	},
-	advance_paid_amount(frm){
-		var gt = frm.doc.rounded_total || frm.doc.grand_total;
-		if(frm.doc.advance_paid_amount > 0){
-			frm.set_value("balance_amount", frm.doc.advance_paid_amount - gt)
-		}
 	},
 	set_pos_data(frm) {
 		let company = frm.doc.company || frappe.defaults.get_user_default("Company")
@@ -306,7 +298,6 @@ frappe.ui.form.on("Cash Invoice Item", {
 					},
 					callback:function(r){
 						if(r.message){
-							console.log(r.message)
 							row.warehouse = frm.doc.warehouse;
 							row.available_qty = r.message.actual_qty;
 							row.last_selling_rate = r.message.last_selling_rate;
