@@ -134,20 +134,20 @@
    "fetch_from": "item_code.last_purchase_rate",
    "fieldname": "last_purchase_rate",
    "fieldtype": "Float",
-   "label": "Last Purchase Rate",
+   "label": "LP Rate",
    "read_only": 1
   },
   {
    "fieldname": "last_selling_rate",
    "fieldtype": "Currency",
-   "label": "Last Selling Rate",
+   "label": "LS Rate",
    "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-07-14 14:38:59.436142",
+ "modified": "2024-07-15 11:46:34.496782",
  "modified_by": "Administrator",
  "module": "Deco Pan",
  "name": "Cash Invoice Item",

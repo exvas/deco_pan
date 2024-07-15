@@ -8,7 +8,19 @@ frappe.ui.form.on("Cash Invoice", {
 			method: "cancel_doc"
 		})
 	},
-
+	onload_post_render(frm){
+		frappe.db.get_single_value("Deco Pan Settings", "role_for_lp_rate").then(role=>{
+			console.log(role)
+			if(role && frappe.user.has_role(role)){
+				frm.fields_dict.items.grid.update_docfield_property(
+					"last_purchase_rate",
+					"hidden",
+					1
+				);
+				frm.refresh_field("items")
+			}
+		});
+	},
 	refresh(frm){
 		if(frm.doc.docstatus != 0){
 			frm.add_custom_button(
@@ -41,7 +53,7 @@ frappe.ui.form.on("Cash Invoice", {
 		}
 	},
 	onload(frm){
-		frm.ignore_doctypes_on_cancel_all = ["GL Entry", "Stock Ledger Entry"];
+		// frm.ignore_doctypes_on_cancel_all = ["GL Entry", "Stock Ledger Entry"];
         if(frm.doc.__islocal){
             frappe.db.get_doc("Deco Pan Settings").then(data=>{
 				if(!data.default_cost_center || !data.default_income_account){

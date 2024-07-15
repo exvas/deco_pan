@@ -11,7 +11,8 @@
   "default_warehouse",
   "column_break_dxkd",
   "debit_to",
-  "default_income_account"
+  "default_income_account",
+  "role_for_lp_rate"
  ],
  "fields": [
   {
@@ -52,12 +53,18 @@
    "fieldtype": "Link",
    "label": "Default Warehouse",
    "options": "Warehouse"
+  },
+  {
+   "fieldname": "role_for_lp_rate",
+   "fieldtype": "Link",
+   "label": "View LP Rate Role",
+   "options": "Role"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-06-28 07:59:04.654467",
+ "modified": "2024-07-15 12:27:20.294244",
  "modified_by": "Administrator",
  "module": "Deco Pan",
  "name": "Deco Pan Settings",
