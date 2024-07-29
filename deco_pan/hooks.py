@@ -28,7 +28,15 @@ app_license = "mit"
 # page_js = {"page" : "public/js/file.js"}
 
 # include js in doctype views
-# doctype_js = {"doctype" : "public/js/doctype.js"}
+doctype_js = {"Purchase Invoice" : "public/js/purchase_invoice.js",
+              "Purchase Order" : "public/js/purchase_order.js",
+			  "Purchase Receipt" : "public/js/purchase_receipt.js",
+			  "Sales Invoice" : "public/js/sales_invoice.js",
+			  "Sales Order" : "public/js/sales_order.js",
+			  "Delivery Note" : "public/js/delivery_note.js",
+			  "Quotation" : "public/js/quotation.js",
+
+}
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
@@ -122,13 +130,59 @@ app_license = "mit"
 # ---------------
 # Hook on document methods and events
 
-# doc_events = {
-# 	"*": {
-# 		"on_update": "method",
-# 		"on_cancel": "method",
-# 		"on_trash": "method"
-# 	}
-# }
+
+doc_events = {
+	
+
+     "Purchase Invoice":{
+                # "on_submit":"demo.doc_events.purchase_invoice.on_submit_se",
+
+        
+    },
+	"Purchase Order":{
+
+	},
+	"Purchase Receipt":{
+
+	},
+	"Delivery Note":{
+
+	},
+	"Quotation":{
+
+	},
+	"Sales Order":{
+
+	},
+	"Sales Invoice":{
+
+	},
+
+    # "Expense Claim":{
+    #     # "on_submit": "prago_tech.doc_events.expense_claim.on_submit"
+    #     "on_submit":"prago_tech.doc_events.expense_claim.on_submit_se",
+    #     "on_cancel":"prago_tech.doc_events.expense_claim.on_cancel_se",
+    #     "before_submit":"prago_tech.doc_events.expense_claim.before_submit_se"
+
+    # },
+
+    # # "Sales Order":{
+    # #     # "on_submit": "prago_tech.doc_events.expense_claim.on_submit"
+    # #     "on_submit":"prago_tech.doc_events.sales_order.on_submit_se",
+    # #     "on_cancel":"prago_tech.doc_events.sales_order.on_cancel_se"
+
+    # # },
+
+    # "Lead":{
+
+    #     "validate":"prago_tech.doc_events.lead.validate",
+
+    # },
+
+
+   
+
+}
 
 # Scheduled Tasks
 # ---------------
@@ -216,9 +270,34 @@ app_license = "mit"
 # Authentication and authorization
 # --------------------------------
 
-# auth_hooks = [
-# 	"deco_pan.auth.validate"
-# ]
+fixtures =[
+    {
+	"doctype":"Custom Field",
+	"filters":[
+		["name","in",[
+            "Sales Invoice Item-custom_ls_rate",
+			"Sales Order Item-custom_ls_rate",
+			"Quotation Item-custom_ls_rate",
+			"Delivery Note Item-custom_ls_rate",
+			"Purchase Order Item-custom_lp_rate",
+			"Purchase Invoice Item-custom_lp_rate",
+			"Purchase Receipt Item-custom_lp_rate",
+ 
+					]]
+	]
+    
+	},
+    # {
+    #     "doctype":"Property Setter",
+	# 	"filters":[
+	# 		["name","in",[
+                
+                
+	
+	# 		]]
+	# ]
+	# }
+]
 
 # Automatically update python controller files with type annotations for this app.
 # export_python_type_annotations = True
