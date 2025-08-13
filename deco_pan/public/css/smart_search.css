@@ -1,0 +1,91 @@
+/* Smart Item Search Styles for Inline Search */
+.item-search-result {
+    padding: 8px 12px;
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.item-search-result:hover {
+    background-color: #f8f9fa;
+}
+
+.item-code-name {
+    font-size: 14px;
+    margin-bottom: 4px;
+    color: #333;
+}
+
+.item-details {
+    font-size: 12px;
+    color: #666;
+}
+
+.item-group, .item-uom, .item-brand {
+    display: inline-block;
+    margin-right: 8px;
+}
+
+/* Awesomplete dropdown customization */
+.awesomplete > ul {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    background: white;
+    z-index: 9999;
+}
+
+.awesomplete > ul > li {
+    padding: 0;
+    border: none;
+    line-height: normal;
+}
+
+.awesomplete > ul > li:hover {
+    background: #f8f9fa;
+}
+
+.awesomplete > ul > li[aria-selected="true"] {
+    background: #007bff;
+    color: white;
+}
+
+.awesomplete > ul > li[aria-selected="true"] .item-code-name,
+.awesomplete > ul > li[aria-selected="true"] .item-details {
+    color: white;
+}
+
+/* Enhanced input field styling */
+input[data-fieldname="item_code"] {
+    position: relative;
+}
+
+/* Loading indicator */
+.item-search-loading {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 12px;
+    color: #999;
+}
+
+/* Custom scrollbar for dropdown */
+.awesomplete > ul::-webkit-scrollbar {
+    width: 6px;
+}
+
+.awesomplete > ul::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.awesomplete > ul::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 3px;
+}
+
+.awesomplete > ul::-webkit-scrollbar-thumb:hover {
+    background: #999;
+}
