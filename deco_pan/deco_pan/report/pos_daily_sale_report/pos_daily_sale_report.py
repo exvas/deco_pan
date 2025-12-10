@@ -26,7 +26,7 @@ def get_columns(filters):
             "width": 120
         },
         {
-            "label": _("Invoice No (POS+CREDIT)"),
+            "label": _("Invoice Nos"),
             "fieldname": "invoice_no",
             "fieldtype": "Link",
             "options": "Sales Invoice",
@@ -79,6 +79,12 @@ def get_columns(filters):
         {
             "label": _("Card"),
             "fieldname": "card_amount",
+            "fieldtype": "Currency",
+            "width": 120
+        },
+        {
+            "label": _("General"),
+            "fieldname": "general_amount",
             "fieldtype": "Currency",
             "width": 120
         },
@@ -153,6 +159,7 @@ def get_summary_data(conditions, filters):
         payment_details = get_payment_details(row.invoice_no)
         row["cash_amount"] = payment_details.get("cash", 0)
         row["card_amount"] = payment_details.get("card", 0)
+        row["general_amount"] = payment_details.get("general", 0)
         row["mode_of_payment"] = payment_details.get("mode", "")
 
         result.append(row)
@@ -196,6 +203,7 @@ def get_detailed_data(conditions, filters):
             payment_details = get_payment_details(row.invoice_no)
             row["cash_amount"] = payment_details.get("cash", 0)
             row["card_amount"] = payment_details.get("card", 0)
+            row["general_amount"] = payment_details.get("general", 0)
             row["mode_of_payment"] = payment_details.get("mode", "")
         else:
             row["s_no"] = ""
@@ -203,6 +211,7 @@ def get_detailed_data(conditions, filters):
             row["customer_name"] = ""
             row["cash_amount"] = ""
             row["card_amount"] = ""
+            row["general_amount"] = ""
             row["mode_of_payment"] = ""
             row["owner_name"] = ""
 
@@ -221,6 +230,7 @@ def get_payment_details(invoice_no):
 
     cash_amount = 0
     card_amount = 0
+    general_amount = 0
     modes = []
 
     for payment in payments:
@@ -228,12 +238,14 @@ def get_payment_details(invoice_no):
         mode_type = payment.get("mode_type", "")
         amount = flt(payment.get("amount", 0))
 
-        if mode_type == "Cash" or "cash" in mode.lower():
+        if mode_type == "Cash":
             cash_amount += amount
-        elif mode_type == "Bank" or "card" in mode.lower() or "bank" in mode.lower():
+        elif mode_type == "Bank":
             card_amount += amount
+        elif mode_type == "General":
+            general_amount += amount
         else:
-            card_amount += amount
+            general_amount += amount
 
         if mode and mode not in modes:
             modes.append(mode)
@@ -243,6 +255,7 @@ def get_payment_details(invoice_no):
     return {
         "cash": cash_amount,
         "card": card_amount,
+        "general": general_amount,
         "mode": mode_display
     }
 
@@ -251,6 +264,7 @@ def get_report_summary(filters, data):
     total_amount = 0
     total_cash = 0
     total_card = 0
+    total_general = 0
 
     processed_invoices = set()
 
@@ -261,6 +275,7 @@ def get_report_summary(filters, data):
             total_amount += flt(row.get("amount", 0))
             total_cash += flt(row.get("cash_amount", 0)) if row.get("cash_amount") != "" else 0
             total_card += flt(row.get("card_amount", 0)) if row.get("card_amount") != "" else 0
+            total_general += flt(row.get("general_amount", 0)) if row.get("general_amount") != "" else 0
 
     opening_cash = flt(filters.get("opening_cash_balance", 0))
     closing_cash = opening_cash + total_cash
@@ -284,6 +299,13 @@ def get_report_summary(filters, data):
             "value": total_card,
             "indicator": "Orange",
             "label": _("Total Card"),
+            "datatype": "Currency",
+            "currency": frappe.db.get_default("currency")
+        },
+        {
+            "value": total_general,
+            "indicator": "Purple",
+            "label": _("Total General"),
             "datatype": "Currency",
             "currency": frappe.db.get_default("currency")
         },
