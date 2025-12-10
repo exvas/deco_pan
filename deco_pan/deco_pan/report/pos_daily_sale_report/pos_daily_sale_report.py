@@ -26,7 +26,7 @@ def get_columns(filters):
             "width": 120
         },
         {
-            "label": _("Invoice Nos"),
+            "label": _("Invoice Number"),
             "fieldname": "invoice_no",
             "fieldtype": "Link",
             "options": "Sales Invoice",
