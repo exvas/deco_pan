@@ -64,7 +64,9 @@ frappe.query_reports["POS Daily Sale Report"] = {
 
     "onload": function(report) {
         report.page.add_inner_button(__("Print"), function() {
-            frappe.query_report.print_report();
+            frappe.query_report.print_report({
+                orientation: 'Landscape'
+            });
         });
     }
 };
