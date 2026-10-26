@@ -11,7 +11,7 @@ app_license = "mit"
 
 # include js, css files in header of desk.html
 app_include_css = "/assets/deco_pan/css/smart_search.css"
-# app_include_js = "/assets/deco_pan/js/deco_pan.js"
+app_include_js = "/assets/deco_pan/js/deco_pan.js"
 
 # include js, css files in header of web template
 # web_include_css = "/assets/deco_pan/css/deco_pan.css"
@@ -45,6 +45,8 @@ doctype_js = {"Purchase Invoice" : "public/js/purchase_invoice.js",
 # ------------------
 # include app icons in desk
 # app_include_icons = "deco_pan/public/icons.svg"
+
+boot_session = "deco_pan.deco_pan.doctype.deco_pan_settings.deco_pan_settings.boot_session"
 
 # Home Pages
 # ----------

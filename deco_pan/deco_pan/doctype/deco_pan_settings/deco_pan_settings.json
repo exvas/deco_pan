@@ -12,7 +12,11 @@
   "column_break_dxkd",
   "debit_to",
   "default_income_account",
-  "role_for_lp_rate"
+  "role_for_lp_rate",
+  "cost_visibility_section",
+  "hide_cost",
+  "restricted_users",
+  "hidden_fields"
  ],
  "fields": [
   {
@@ -59,12 +63,37 @@
    "fieldtype": "Link",
    "label": "View LP Rate Role",
    "options": "Role"
+  },
+  {
+   "fieldname": "cost_visibility_section",
+   "fieldtype": "Section Break",
+   "label": "Cost Visibility"
+  },
+  {
+   "default": "0",
+   "fieldname": "hide_cost",
+   "fieldtype": "Check",
+   "label": "Hide Cost / Buying Price for Restricted Users"
+  },
+  {
+   "depends_on": "hide_cost",
+   "fieldname": "restricted_users",
+   "fieldtype": "Table MultiSelect",
+   "label": "Restricted Users",
+   "options": "Deco Pan Restricted User"
+  },
+  {
+   "depends_on": "hide_cost",
+   "fieldname": "hidden_fields",
+   "fieldtype": "Table",
+   "label": "Fields to Hide",
+   "options": "Deco Pan Hidden Field"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-07-15 12:27:20.294244",
+ "modified": "2026-10-26 10:00:00.000000",
  "modified_by": "Administrator",
  "module": "Deco Pan",
  "name": "Deco Pan Settings",
