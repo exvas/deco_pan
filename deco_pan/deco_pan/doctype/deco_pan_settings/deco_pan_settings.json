@@ -16,7 +16,9 @@
   "cost_visibility_section",
   "hide_cost",
   "restricted_users",
-  "hidden_fields"
+  "hidden_fields",
+  "stock_entry_restriction_section",
+  "allowed_stock_entry_types"
  ],
  "fields": [
   {
@@ -67,7 +69,7 @@
   {
    "fieldname": "cost_visibility_section",
    "fieldtype": "Section Break",
-   "label": "Cost Visibility"
+   "label": "Restricted Users"
   },
   {
    "default": "0",
@@ -76,7 +78,6 @@
    "label": "Hide Cost / Buying Price for Restricted Users"
   },
   {
-   "depends_on": "hide_cost",
    "fieldname": "restricted_users",
    "fieldtype": "Table MultiSelect",
    "label": "Restricted Users",
@@ -88,12 +89,24 @@
    "fieldtype": "Table",
    "label": "Fields to Hide",
    "options": "Deco Pan Hidden Field"
+  },
+  {
+   "fieldname": "stock_entry_restriction_section",
+   "fieldtype": "Section Break",
+   "label": "Stock Entry Restriction"
+  },
+  {
+   "description": "Restricted Users can only create Stock Entries of these types. Leave empty for no restriction.",
+   "fieldname": "allowed_stock_entry_types",
+   "fieldtype": "Table MultiSelect",
+   "label": "Allowed Stock Entry Types",
+   "options": "Deco Pan Stock Entry Type"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2026-10-26 10:00:00.000000",
+ "modified": "2026-10-27 09:00:00.000000",
  "modified_by": "Administrator",
  "module": "Deco Pan",
  "name": "Deco Pan Settings",

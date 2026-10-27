@@ -6,3 +6,4 @@
 # Patches added in this section will be executed after doctypes are migrated
 deco_pan.patches.set_default_cost_hidden_fields
 deco_pan.patches.add_purchase_receipt_cost_hidden_fields
+deco_pan.patches.set_default_allowed_stock_entry_types

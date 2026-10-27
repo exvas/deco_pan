@@ -35,6 +35,7 @@ doctype_js = {"Purchase Invoice" : "public/js/purchase_invoice.js",
 			  "Sales Order" : "public/js/sales_order.js",
 			  "Delivery Note" : "public/js/delivery_note.js",
 			  "Quotation" : "public/js/quotation.js",
+			  "Stock Entry" : "public/js/stock_entry.js",
 
 }
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
@@ -158,6 +159,9 @@ doc_events = {
 	},
 	"Sales Invoice":{
 
+	},
+	"Stock Entry":{
+		"validate":"deco_pan.doc_events.stock_entry.validate",
 	},
 
     # "Expense Claim":{
