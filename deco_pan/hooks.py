@@ -135,6 +135,9 @@ boot_session = "deco_pan.deco_pan.doctype.deco_pan_settings.deco_pan_settings.bo
 
 
 doc_events = {
+	"*":{
+		"before_print":"deco_pan.doc_events.print_hide.before_print",
+	},
 	
 
      "Purchase Invoice":{

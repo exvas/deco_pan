@@ -7,3 +7,4 @@
 deco_pan.patches.set_default_cost_hidden_fields
 deco_pan.patches.add_purchase_receipt_cost_hidden_fields
 deco_pan.patches.set_default_allowed_stock_entry_types
+deco_pan.patches.add_stock_entry_total_amount_hidden_field
