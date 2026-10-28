@@ -26,11 +26,19 @@ def apply_patch():
 		reportview.get_form_params = get_form_params
 
 
+def is_active():
+	# patches live in the worker process, which also serves sites without deco_pan
+	return "deco_pan" in frappe.get_installed_apps()
+
+
 # Query / Script reports
 
 
 @frappe.whitelist()
 def run(report_name, *args, **kwargs):
+	if not is_active():
+		return _original_run(report_name, *args, **kwargs)
+
 	hidden, blocked = get_report_restrictions()
 	if not hidden and not blocked:
 		return _original_run(report_name, *args, **kwargs)
@@ -85,6 +93,9 @@ def strip_columns(result, hidden_columns):
 
 def get_form_params():
 	data = _original_get_form_params()
+	if not is_active():
+		return data
+
 	hidden = get_hidden_fields()
 	if hidden and data.get("fields"):
 		data.fields = [f for f in data.fields if not is_hidden_field(f, data.doctype, hidden)]
