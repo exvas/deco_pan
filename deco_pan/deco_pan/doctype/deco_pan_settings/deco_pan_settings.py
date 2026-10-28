@@ -37,7 +37,7 @@ def get_report_restrictions(user=None):
 
 	hidden = {}
 	for row in settings.get("hidden_report_columns", []):
-		hidden.setdefault(row.report, set()).add(row.column_name)
+		hidden.setdefault(row.report or None, set()).add(row.column_name)
 	return hidden, {d.report for d in settings.get("blocked_reports", [])}
 
 
