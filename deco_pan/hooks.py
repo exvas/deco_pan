@@ -244,12 +244,12 @@ doc_events = {
 
 # Request Events
 # ----------------
-# before_request = ["deco_pan.utils.before_request"]
+before_request = ["deco_pan.overrides.query_report.apply_patch"]
 # after_request = ["deco_pan.utils.after_request"]
 
 # Job Events
 # ----------
-# before_job = ["deco_pan.utils.before_job"]
+before_job = ["deco_pan.overrides.query_report.apply_patch"]
 # after_job = ["deco_pan.utils.after_job"]
 
 # User Data Protection

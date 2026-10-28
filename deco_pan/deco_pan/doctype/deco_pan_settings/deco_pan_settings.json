@@ -17,6 +17,8 @@
   "hide_cost",
   "restricted_users",
   "hidden_fields",
+  "hidden_report_columns",
+  "blocked_reports",
   "stock_entry_restriction_section",
   "allowed_stock_entry_types"
  ],
@@ -101,12 +103,27 @@
    "fieldtype": "Table MultiSelect",
    "label": "Allowed Stock Entry Types",
    "options": "Deco Pan Stock Entry Type"
+  },
+  {
+   "depends_on": "hide_cost",
+   "fieldname": "hidden_report_columns",
+   "fieldtype": "Table",
+   "label": "Report Columns to Hide",
+   "options": "Deco Pan Hidden Report Column"
+  },
+  {
+   "depends_on": "hide_cost",
+   "description": "Restricted Users cannot run these reports.",
+   "fieldname": "blocked_reports",
+   "fieldtype": "Table MultiSelect",
+   "label": "Blocked Reports",
+   "options": "Deco Pan Blocked Report"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2026-10-27 09:00:00.000000",
+ "modified": "2026-10-28 09:00:00.000000",
  "modified_by": "Administrator",
  "module": "Deco Pan",
  "name": "Deco Pan Settings",
