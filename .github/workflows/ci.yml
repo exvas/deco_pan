@@ -21,4 +21,3 @@ jobs:
       frappe_versions: '["version-15"]'
       draft_frappe_versions: '["version-15"]'
       hrms: true
-      runs_on: '"ubuntu-latest"'
