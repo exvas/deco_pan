@@ -29,7 +29,19 @@ class TestSmartItemSearch(unittest.TestCase):
                 "stock_uom": "Kg"
             }
         ]
-        
+
+        # The items link to these: a fresh test site has none of them
+        for group in ("Adhesives", "Steel"):
+            if not frappe.db.exists("Item Group", group):
+                frappe.get_doc({"doctype": "Item Group", "item_group_name": group,
+                                "parent_item_group": "All Item Groups"}).insert(ignore_permissions=True)
+        for brand in ("Sika", "Tata"):
+            if not frappe.db.exists("Brand", brand):
+                frappe.get_doc({"doctype": "Brand", "brand": brand}).insert(ignore_permissions=True)
+        for uom in ("Nos", "Kg"):
+            if not frappe.db.exists("UOM", uom):
+                frappe.get_doc({"doctype": "UOM", "uom_name": uom}).insert(ignore_permissions=True)
+
         for item_data in test_items:
             if not frappe.db.exists("Item", item_data["item_code"]):
                 item_doc = frappe.get_doc({
