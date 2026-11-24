@@ -17,6 +17,7 @@ jobs:
   tests:
     uses: exvas/ci-workflows/.github/workflows/frappe-app.yml@v1
     with:
+      runs_on: '"ubuntu-latest"'   # public repository: GitHub-hosted is free; our box refuses public repositories
       app: deco_pan
       frappe_versions: '["version-15"]'
       draft_frappe_versions: '["version-15"]'

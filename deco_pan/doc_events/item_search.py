@@ -110,7 +110,8 @@ def smart_item_search(query="", doctype="Purchase Order", item_group="", brand="
     conditions = []
     values = []
     
-    # Search in item_code, item_name, and barcode
+    # Search in item_code, item_name, and barcode (barcodes live in the Item Barcode child table:
+    # Item has had no barcode column since v12, and selecting it made every search fail and return [])
     for term in search_terms:
         # Use LIKE with wildcards for partial matching
         term_condition = """
@@ -118,7 +119,7 @@ def smart_item_search(query="", doctype="Purchase Order", item_group="", brand="
              item_name LIKE %s OR
              item_code LIKE %s OR
              item_name LIKE %s OR
-             barcode LIKE %s)
+             EXISTS (SELECT 1 FROM `tabItem Barcode` ib WHERE ib.parent = `tabItem`.name AND ib.barcode LIKE %s))
         """
         # Add different variations of the search term
         wildcard_term = f"%{term}%"
@@ -152,11 +153,11 @@ def smart_item_search(query="", doctype="Purchase Order", item_group="", brand="
             item_group,
             brand,
             description,
-            barcode,
+            (SELECT ib.barcode FROM `tabItem Barcode` ib WHERE ib.parent = `tabItem`.name ORDER BY ib.idx LIMIT 1) AS barcode,
             CASE 
                 WHEN item_code LIKE %s THEN 1
                 WHEN item_name LIKE %s THEN 2
-                WHEN barcode LIKE %s THEN 3
+                WHEN EXISTS (SELECT 1 FROM `tabItem Barcode` ib WHERE ib.parent = `tabItem`.name AND ib.barcode LIKE %s) THEN 3
                 ELSE 4
             END as relevance_score
         FROM `tabItem`
